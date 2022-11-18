@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "openzeppelin-contracts/access/Ownable.sol";
-import "./IImbuedNFT.sol";
+import "./deployed/IImbuedNFT.sol";
 
 contract ImbuedMintV3 is Ownable {
     IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
