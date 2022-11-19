@@ -52,11 +52,11 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     }
 
     function onERC721Received(
-        address operator,
-        address from,
-        uint256 tokenId,
-        bytes calldata data
-    ) external returns (bytes4) {
+        address,
+        address,
+        uint256,
+        bytes calldata
+    ) external view returns (bytes4) {
         require(msg.sender == address(NFT), "Only receive from Imbued contract, no other NFTs");
         return this.onERC721Received.selector;
     }
