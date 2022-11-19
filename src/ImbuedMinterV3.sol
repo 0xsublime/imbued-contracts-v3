@@ -11,7 +11,7 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
 
     mapping (uint256 => bool) public miamiTicketId2claimed; // token ids that are claimed.
 
-    enum Edition { LIFE, LONGING, FRIENDSHIP }
+    enum Edition { LIFE, LONGING, FRIENDSHIP, FRIENDSHIP_MIAMI }
     // Order relevant variables per edition so that they are packed together,
     // reduced sload and sstore gas costs.
     struct MintInfo {
@@ -93,6 +93,8 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     /// @param price the price to mint one token.
     /// @dev nextId must be <= maxId.
     function setEdition(Edition edition, uint16 nextId, uint16 maxId, uint224 price) external onlyOwner() {
+        require(nextId % 100 <= maxId % 100, "nextId must be <= maxId");
+        require(nextId / 100 == maxId / 100, "nextId and maxId must be in the same batch");
         mintInfos[uint(edition)] = MintInfo(nextId, maxId, price);
     }
 
