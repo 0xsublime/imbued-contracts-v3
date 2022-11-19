@@ -17,23 +17,26 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     struct MintInfo {
         uint16 nextId;
         uint16 maxId;
-        uint224 price;
+        bool openMint;
+        uint216 price;
     }
 
     MintInfo[4] public mintInfos;
 
     constructor() {
-        mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, 0.05 ether);
-        mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, 0.05 ether);
-        mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, 0.05 ether);
+        mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, true, 0.05 ether);
+        mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, true, 0.05 ether);
+        mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, false, 0.05 ether);
         // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
-        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, 0.05 ether);
+        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, true, 0 ether);
     }
 
     // Mint tokens of a specific edition.
     function mint(Edition edition, uint8 amount) external payable {
         // Check payment.
-        require(mintInfos[uint(edition)].price * amount == msg.value, "Incorrect payment amount");
+        MintInfo memory info = mintInfos[uint(edition)];
+        require(info.price * amount == msg.value, "Incorrect payment amount");
+        require(info.openMint, "This edition cannot be minted this way");
         _mint(msg.sender, edition, amount);
     }
 
@@ -92,11 +95,11 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     /// @param maxId the maximum id to mint.
     /// @param price the price to mint one token.
     /// @dev nextId must be <= maxId.
-    function setEdition(Edition edition, uint16 nextId, uint16 maxId, uint224 price) external onlyOwner() {
+    function setEdition(Edition edition, uint16 nextId, uint16 maxId, bool openMint, uint216 price) external onlyOwner() {
         require(nextId % 100 <= maxId % 100, "nextId must be <= maxId");
         require(nextId / 100 == maxId / 100, "nextId and maxId must be in the same batch");
         require(NFT.provenance(nextId, 0, 0).length == 0, "nextId must not be minted yet");
-        mintInfos[uint(edition)] = MintInfo(nextId, maxId, price);
+        mintInfos[uint(edition)] = MintInfo(nextId, maxId, openMint, price);
     }
 
     /// (Admin only) self-destruct the minting contract.
