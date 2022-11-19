@@ -95,6 +95,7 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     function setEdition(Edition edition, uint16 nextId, uint16 maxId, uint224 price) external onlyOwner() {
         require(nextId % 100 <= maxId % 100, "nextId must be <= maxId");
         require(nextId / 100 == maxId / 100, "nextId and maxId must be in the same batch");
+        require(NFT.provenance(nextId, 0, 0).length == 0, "nextId must not be minted yet");
         mintInfos[uint(edition)] = MintInfo(nextId, maxId, price);
     }
 
