@@ -20,7 +20,7 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         uint224 price;
     }
 
-    MintInfo[3] public mintInfos;
+    MintInfo[4] public mintInfos;
 
     constructor() {
         mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, 0.05 ether);
