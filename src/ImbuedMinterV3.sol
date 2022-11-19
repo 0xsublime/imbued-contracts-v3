@@ -86,6 +86,16 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         recipient.call{value: address(this).balance}("");
     }
 
+    /// (Admin only) Set parameters of an edition.
+    /// @param edition which edition to set parameters for. 
+    /// @param nextId the next id to mint.
+    /// @param maxId the maximum id to mint.
+    /// @param price the price to mint one token.
+    /// @dev nextId must be <= maxId.
+    function setEdition(Edition edition, uint16 nextId, uint16 maxId, uint224 price) external onlyOwner() {
+        mintInfos[uint(edition)] = MintInfo(nextId, maxId, price);
+    }
+
     /// (Admin only) self-destruct the minting contract.
     /// @param recipient where to send the ether balance.
     function kill(address payable recipient) external payable onlyOwner() {
