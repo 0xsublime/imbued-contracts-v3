@@ -2,12 +2,12 @@
 pragma solidity ^0.8.17;
 
 import "openzeppelin-contracts/access/Ownable.sol";
+import "openzeppelin-contracts/token/ERC721/IERC721Receiver.sol";
 import "./deployed/IImbuedNFT.sol";
 
-contract ImbuedMintV3 is Ownable {
+contract ImbuedMintV3 is Ownable, IERC721Receiver {
     IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
     IERC721 constant public metaverseMiamiTicket = IERC721(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
-
 
     mapping (uint256 => bool) public miamiTicketId2claimed; // token ids that are claimed.
 
@@ -25,13 +25,40 @@ contract ImbuedMintV3 is Ownable {
     constructor() {
         mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, 0.05 ether);
         mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, 0.05 ether);
-        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, 0.05 ether); // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
+        mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, 0.05 ether);
+        // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
+        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, 0.05 ether);
     }
 
+    // Mint tokens of a specific edition.
     function mint(Edition edition, uint8 amount) external payable {
         // Check payment.
         require(mintInfos[uint(edition)].price * amount == msg.value, "Incorrect payment amount");
         _mint(msg.sender, edition, amount);
+    }
+
+    // Free mint for holders of the Metaverse Miami ticket, when they simultaneously mint one for a friend and imbue.
+    // TODO: On new data contract, allow permissioned access to the imbue function for the minter contract.
+    // That will greatly reduce the gas cost of this function.
+    function mintFriendshipMiami(address friend, string imbuement) external {
+        uint256 nextId = mintInfos[uint(Edition.FRIENDSHIP_MIAMI)].nextId;
+        uint256 friendId = nextId + 1;
+        _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);
+        _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);
+        NFT.imbue(nextId, imbuement);
+        NFT.imbue(friendId, imbuement);
+        NFT.transferFrom(address(this), msg.sender, nextId);
+        NFT.transferFrom(friend, msg.sender, nextId);
+    }
+
+    function onERC721Received(
+        address operator,
+        address from,
+        uint256 tokenId,
+        bytes calldata data
+    ) external returns (bytes4) {
+        require(msg.sender == address(NFT), "Only receive from Imbued contract, no other NFTs");
+        return this.onERC721Received.selector;
     }
 
     // only owner
