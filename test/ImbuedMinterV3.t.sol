@@ -74,7 +74,7 @@ contract MinterTest is Test {
         assertEq(uint(1), 1, "simple");
     }
  
-    function testFail(uint256 x) public {
+    function testFail(uint256) public {
         assertEq(uint(1), 2, "simple");
     }
 }
