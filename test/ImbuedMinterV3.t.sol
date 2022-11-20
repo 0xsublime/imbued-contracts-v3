@@ -78,7 +78,7 @@ contract MinterTest is Test {
         vm.assume(user != address(this));
         vm.assume(user != address(nft));
         vm.assume(user != address(minter));
-        vm.assume(uint(nextId) + amount <= maxId);
+        vm.assume(uint(nextId) + amount - 1 <= maxId);
         uint256 mintCost = uint(price) * amount;
 //      console.log("user", user);
 //      console.log("amount", amount);
