@@ -47,6 +47,28 @@ contract MinterTest is Test {
         vm.deal(user, 10 ether); vm.prank(user); minter.mint{value: mintCost}(ImbuedMintV3.Edition(edition), amount);
     }
 
+    function testFailMint1(address user, uint8 amount, uint edition) public {
+        vm.assume(amount > 0);
+        (uint16 nextId, uint16 maxId, bool active, uint216 price) = minter.mintInfos(uint(edition));
+        vm.assume(edition > 3 || user == address(0) || user == address(this) || user == address(nft) || user == address(minter) || user == address(vm) || user == 0x4e59b44847b379578588920cA78FbF26c0B4956C || uint(nextId) + amount - 1 > maxId);
+        uint256 mintCost = uint(price) * amount;
+//      console.log("user", user);
+//      console.log("amount", amount);
+//      console.log("edition", uint(edition));
+//      console.log("mintCost", mintCost);
+//      console.log("nextId", nextId);
+
+        vm.deal(user, 10 ether); vm.prank(user); minter.mint{value: mintCost}(ImbuedMintV3.Edition(edition), amount);
+    }
+
+    function testMint2() public {
+        vm.deal(users[0], 10 ether); vm.prank(users[0]); minter.mint{value: 99 * 0.05 ether}(ImbuedMintV3.Edition.LIFE, 99);
+    }
+
+    function testMint3() public {
+        vm.deal(users[0], 10 ether); vm.prank(users[0]); minter.mint{value: 98 * 0.05 ether}(ImbuedMintV3.Edition.LIFE, 98);
+    }
+
     function testMint(address user, uint8 amount, uint edition) public {
         uint edition = edition % 3;
         vm.assume(edition < 3);
