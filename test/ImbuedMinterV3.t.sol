@@ -21,6 +21,15 @@ contract MinterTest is Test {
         }
     }
  
+    function testMint() public {
+        vm.prank(users[0]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LIFE, 1);
+        assertEq(nft.ownerOf(201), address(users[0]));
+        vm.prank(users[1]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LONGING, 1);
+        assertEq(nft.ownerOf(301), address(users[1]));
+        vm.prank(users[2]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.FRIENDSHIP, 1);
+        assertEq(nft.ownerOf(461), address(users[2]));
+    }
+
     function testSuccess() public {
         assertEq(uint(1), 1, "simple");
     }

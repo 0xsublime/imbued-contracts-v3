@@ -26,9 +26,9 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     constructor() {
         mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, true, 0.05 ether);
         mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, true, 0.05 ether);
-        mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, false, 0.05 ether);
+        mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, false, 0 ether);
         // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
-        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, true, 0 ether);
+        mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, true, 0.05 ether);
     }
 
     // Mint tokens of a specific edition.
