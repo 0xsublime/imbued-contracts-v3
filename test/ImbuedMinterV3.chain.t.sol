@@ -45,6 +45,11 @@ contract MinterTestChain is Test {
         vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
     }
 
+    function testFailMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
+        testMiamiMint(tokenId, friend, imbuement);
+        testMiamiMint(tokenId, friend, imbuement); // Can't mint the same token twice
+    }
+
     function testFailMiamiMint(uint16 tokenId, address sender, address friend, string calldata imbuement) public {
         vm.assume(sender != miami.ownerOf(tokenId));
         vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
