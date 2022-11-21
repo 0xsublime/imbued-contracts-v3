@@ -43,7 +43,8 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
     // Free mint for holders of the Metaverse Miami ticket, when they simultaneously mint one for a friend and imbue.
     // TODO: On new data contract, allow permissioned access to the imbue function for the minter contract.
     // That will greatly reduce the gas cost of this function.
-    function mintFriendshipMiami(address friend, string calldata imbuement) external {
+    function mintFriendshipMiami(uint256 tokenId, address friend, string calldata imbuement) external {
+        require(metaverseMiamiTicket.ownerOf(tokenId) == msg.sender, "You do not own this ticket");
         uint256 nextId = mintInfos[uint(Edition.FRIENDSHIP_MIAMI)].nextId;
         uint256 friendId = nextId + 1;
         _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);

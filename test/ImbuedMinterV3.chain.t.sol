@@ -39,8 +39,15 @@ contract MinterTestChain is Test {
         vm.assume(bytes(imbuement).length <= 32);
         for (uint i = 0; i < fixtures.length; i++) {
             vm.assume(miami.ownerOf(tokenId) != fixtures[i]);
+            vm.assume(friend != fixtures[i]);
         }
-        minter.mintFriendshipMiami(friend, imbuement);
+        address sender = miami.ownerOf(tokenId);
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+    }
+
+    function testFailMiamiMint(uint16 tokenId, address sender, address friend, string calldata imbuement) public {
+        vm.assume(sender != miami.ownerOf(tokenId));
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
     }
  
     function testMint() public {
