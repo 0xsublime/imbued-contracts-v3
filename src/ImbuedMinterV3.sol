@@ -51,7 +51,7 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         NFT.imbue(nextId, imbuement);
         NFT.imbue(friendId, imbuement);
         NFT.transferFrom(address(this), msg.sender, nextId);
-        NFT.transferFrom(friend, msg.sender, nextId);
+        NFT.transferFrom(address(this), friend, friendId);
     }
 
     function onERC721Received(
