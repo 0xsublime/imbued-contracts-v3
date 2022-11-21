@@ -6,4 +6,8 @@ libs = ['lib']
 [profile.default.fuzz]
 runs = 1000
 
+[rpc_endpoints]
+polygon = "${RPC_POLYGON}"
+mainnet = "http://localhost:8545"
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
