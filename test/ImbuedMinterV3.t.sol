@@ -49,7 +49,7 @@ contract MinterTest is Test {
 
     function testFailMint1(address user, uint8 amount, uint edition) public {
         vm.assume(amount > 0);
-        (uint16 nextId, uint16 maxId, bool active, uint216 price) = minter.mintInfos(uint(edition));
+        (uint16 nextId, uint16 maxId, , uint216 price) = minter.mintInfos(uint(edition));
         vm.assume(edition > 3 || user == address(0) || user == address(this) || user == address(nft) || user == address(minter) || user == address(vm) || user == 0x4e59b44847b379578588920cA78FbF26c0B4956C || uint(nextId) + amount - 1 > maxId);
         uint256 mintCost = uint(price) * amount;
 //      console.log("user", user);
