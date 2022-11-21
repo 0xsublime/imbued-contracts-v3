@@ -50,6 +50,11 @@ contract MinterTestChain is Test {
         vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
     }
  
+    function testFailMiamiMint(uint16 tokenId, string calldata imbuement) public {
+        address sender = miami.ownerOf(tokenId);
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, sender, imbuement); // Can't make yourself the friend
+    }
+
     function testMint() public {
         vm.prank(users[0]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LIFE, 1);
         assertEq(nft.ownerOf(201), address(users[0]));
