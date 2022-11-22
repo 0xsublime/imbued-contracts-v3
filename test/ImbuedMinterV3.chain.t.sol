@@ -42,7 +42,11 @@ contract MinterTestChain is Test {
             vm.assume(friend != fixtures[i]);
         }
         address sender = miami.ownerOf(tokenId);
+        (uint nextId, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
         vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+        assertEq(nft.ownerOf(nextId), friend);
+        (uint nextIdNew, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        assertEq(nextIdNew, nextId + 1);
     }
 
     function testFailMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
