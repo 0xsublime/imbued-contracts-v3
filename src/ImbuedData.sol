@@ -58,6 +58,7 @@ contract ImbuedData is AccessControlUpgradeable {
     }
 
     function _imbue(uint256 tokenId, bytes32 imbuement, address imbuer, uint96 timestamp) internal {
+        require(uint(imbuement) != 0, "Imbuement cannot be empty");
         Imbuement memory imb = Imbuement(imbuement, imbuer, timestamp);
         imbuements[tokenId].push(imb);
 
