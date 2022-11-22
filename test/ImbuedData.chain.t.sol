@@ -30,7 +30,15 @@ contract DataTestChain is Test {
         dataContract = ImbuedData(address(proxy));
         dataContract.initialize(imbuers, imbuedDeployer);
 
-        vm.prank(imbuedDeployer); nft.setDataContract(address(implementation));
+        vm.prank(imbuedDeployer); nft.setDataContract(address(dataContract));
+    }
+
+    function testUpgrade() public {
+        dataContract.imbueAdmin(10, bytes32("hello world"), address(0xdead), 99);
+        implementation = new ImbuedData();
+        admin.upgrade(proxy, address(implementation));
+        (bytes32 imb,,) = dataContract.imbuements(10, 0);
+        assertEq(imb, bytes32("hello world"), "data persists after upgrade");
     }
 
     function testLove() public {

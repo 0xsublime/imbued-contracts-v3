@@ -4,10 +4,11 @@ pragma solidity ^0.8.17;
 import "openzeppelin-contracts/access/Ownable.sol";
 import "openzeppelin-contracts/token/ERC721/IERC721Receiver.sol";
 import "./deployed/IImbuedNFT.sol";
+import "./ImbuedData.sol";
 
-contract ImbuedMintV3 is Ownable, IERC721Receiver {
+contract ImbuedMintV3 is Ownable {
     IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
-    IERC721 constant public metaverseMiamiTicket = IERC721(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
+    IERC721 immutable public metaverseMiamiTicket;
 
     mapping (uint256 => bool) public miamiTicketId2claimed; // token ids that are claimed.
 
@@ -23,7 +24,8 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
 
     MintInfo[4] public mintInfos;
 
-    constructor() {
+    constructor(address metaverseMiamiAddress) {
+        metaverseMiamiTicket = IERC721(metaverseMiamiAddress);
         mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, true, 0.05 ether);
         mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, true, 0.05 ether);
         mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, false, 0 ether);
@@ -50,20 +52,13 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         require(msg.sender != friend, "You cannot mint with yourself as the friend");
         require(miamiTicketId2claimed[tokenId] == false, "You already claimed with this ticket");
         miamiTicketId2claimed[tokenId] = true;
+        require(bytes(imbuement).length > 0, "Imbuement cannot be empty");
+        require(bytes(imbuement).length <= 32, "Imbuement too long");
         uint256 nextId = info.nextId;
-        _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);
-        NFT.imbue(nextId, imbuement);
-        NFT.transferFrom(address(this), friend, nextId);
-    }
-
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external view returns (bytes4) {
-        require(msg.sender == address(NFT), "Only receive from Imbued contract, no other NFTs");
-        return this.onERC721Received.selector;
+        ImbuedData data = ImbuedData(NFT.dataContract());
+        bytes32 imb = bytes32(bytes(imbuement));
+        data.imbueAdmin(nextId, imb, msg.sender, uint96(block.timestamp));
+        _mint(friend, Edition.FRIENDSHIP_MIAMI, 1);
     }
 
     // only owner

@@ -13,7 +13,7 @@ contract MinterTest is Test {
     address[] fixtures;
 
     function setUp() public {
-        minter = new ImbuedMintV3();
+        minter = new ImbuedMintV3(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
         vm.prank(imbuedDeployer); nft = new ImbuedNFT();
         vm.prank(imbuedDeployer); nft.setMintContract(address(minter));
         assertEq(address(minter.NFT()), address(nft));

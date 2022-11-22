@@ -2,11 +2,17 @@
 pragma solidity ^0.8.13;
 
 import "forge-std/Test.sol";
+import "openzeppelin-contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "openzeppelin-contracts/proxy/transparent/ProxyAdmin.sol";
 import "../src/deployed/ImbuedNFT.sol";
 import "../src/ImbuedMinterV3.sol";
 
 contract GasTestChain is Test {
     ImbuedNFT constant nft = ImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
+    ImbuedData implementation;
+    TransparentUpgradeableProxy proxy;
+    ImbuedData dataContract;
+    ProxyAdmin admin;
     ImbuedMintV3 minter;
 
     address imbuedDeployer = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
@@ -20,11 +26,22 @@ contract GasTestChain is Test {
         vm.createSelectFork(vm.rpcUrl("mainnet"));
         vm.deal(alice, 10 ether);
 
-        minter = new ImbuedMintV3();
+        minter = new ImbuedMintV3(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
         vm.prank(imbuedDeployer); nft.setMintContract(address(minter));
         vm.prank(imbuedDeployer); nft.setEditionTransferable(4);
         assertEq(address(minter.NFT()), address(nft));
 
+        admin = new ProxyAdmin();
+        implementation = new ImbuedData();
+        //bytes memory calld = abi.encodeWithSignature("initialize(address[],address)", [address(this)], imbuedDeployer);
+        proxy = new TransparentUpgradeableProxy(address(implementation), address(admin), "");
+        address[] memory imbuers = new address[](2);
+        imbuers[0] = address(this);
+        imbuers[1] = address(minter);
+        dataContract = ImbuedData(address(proxy));
+        dataContract.initialize(imbuers, imbuedDeployer);
+
+        vm.prank(imbuedDeployer); nft.setDataContract(address(dataContract));
     }
 
     function testMint1() public {

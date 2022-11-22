@@ -2,11 +2,18 @@
 pragma solidity ^0.8.13;
  
 import "forge-std/Test.sol";
+import "openzeppelin-contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
+import "openzeppelin-contracts/proxy/transparent/ProxyAdmin.sol";
 import "../src/ImbuedMinterV3.sol";
 import "../src/deployed/ImbuedNFT.sol";
  
 contract MinterTestChain is Test {
     ImbuedNFT nft = ImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
+
+    ImbuedData implementation;
+    TransparentUpgradeableProxy proxy;
+    ImbuedData dataContract;
+    ProxyAdmin admin;
 
     // The lowest token ID is 1, the highest is 668.
     IERC721Enumerable miami = IERC721Enumerable(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
@@ -23,7 +30,7 @@ contract MinterTestChain is Test {
         // No need for a fork block if running against a local node
         vm.createSelectFork(vm.rpcUrl("mainnet"));
 
-        minter = new ImbuedMintV3();
+        minter = new ImbuedMintV3(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
         vm.prank(imbuedDeployer); nft.setMintContract(address(minter));
         vm.prank(imbuedDeployer); nft.setEditionTransferable(4);
         assertEq(address(minter.NFT()), address(nft));
@@ -31,9 +38,20 @@ contract MinterTestChain is Test {
             vm.deal(users[i], 10 ether);
         }
         fixtures = [address(0), address(this), address(nft), address(minter), address(vm), 0x4e59b44847b379578588920cA78FbF26c0B4956C];
+
+        admin = new ProxyAdmin();
+        implementation = new ImbuedData();
+        proxy = new TransparentUpgradeableProxy(address(implementation), address(admin), "");
+        address[] memory imbuers = new address[](2);
+        imbuers[0] = address(this);
+        imbuers[1] = address(minter);
+        dataContract = ImbuedData(address(proxy));
+        dataContract.initialize(imbuers, imbuedDeployer);
+        vm.prank(imbuedDeployer); nft.setDataContract(address(dataContract));
     }
 
     function testMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
+        vm.assume(bytes(imbuement).length > 0);
         uint totalSupply = miami.totalSupply();
         vm.assume(tokenId >= 1 && tokenId <= totalSupply);
         vm.assume(bytes(imbuement).length <= 32);
@@ -50,8 +68,21 @@ contract MinterTestChain is Test {
     }
 
     function testFailMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
-        testMiamiMint(tokenId, friend, imbuement);
-        testMiamiMint(tokenId, friend, imbuement); // Can't mint the same token twice
+        vm.assume(bytes(imbuement).length > 0);
+        uint totalSupply = miami.totalSupply();
+        vm.assume(tokenId >= 1 && tokenId <= totalSupply);
+        vm.assume(bytes(imbuement).length <= 32);
+        for (uint i = 0; i < fixtures.length; i++) {
+            vm.assume(miami.ownerOf(tokenId) != fixtures[i]);
+            vm.assume(friend != fixtures[i]);
+        }
+        address sender = miami.ownerOf(tokenId);
+        (uint nextId, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+        assertEq(nft.ownerOf(nextId), friend);
+        (uint nextIdNew, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        assertEq(nextIdNew, nextId + 1);
     }
 
     function testFailMiamiMint(uint16 tokenId, address sender, address friend, string calldata imbuement) public {
