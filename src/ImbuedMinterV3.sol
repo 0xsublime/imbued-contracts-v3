@@ -27,7 +27,7 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         mintInfos[uint(Edition.LIFE      )] = MintInfo(201, 299, true, 0.05 ether);
         mintInfos[uint(Edition.LONGING   )] = MintInfo(301, 399, true, 0.05 ether);
         mintInfos[uint(Edition.FRIENDSHIP_MIAMI)] = MintInfo(401, 460, false, 0 ether);
-        // Friendship edition is 461-499, first 2x30 reserved for Miami ticket holders.
+        // Friendship edition is 461-499, first 60 reserved for Miami ticket holders.
         mintInfos[uint(Edition.FRIENDSHIP)] = MintInfo(461, 499, true, 0.05 ether);
     }
 
@@ -51,13 +51,9 @@ contract ImbuedMintV3 is Ownable, IERC721Receiver {
         require(miamiTicketId2claimed[tokenId] == false, "You already claimed with this ticket");
         miamiTicketId2claimed[tokenId] = true;
         uint256 nextId = info.nextId;
-        uint256 friendId = nextId + 1;
-        _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);
         _mint(address(this), Edition.FRIENDSHIP_MIAMI, 1);
         NFT.imbue(nextId, imbuement);
-        NFT.imbue(friendId, imbuement);
-        NFT.transferFrom(address(this), msg.sender, nextId);
-        NFT.transferFrom(address(this), friend, friendId);
+        NFT.transferFrom(address(this), friend, nextId);
     }
 
     function onERC721Received(
