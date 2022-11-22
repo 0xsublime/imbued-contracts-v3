@@ -30,7 +30,6 @@ contract DataTestChain is Test {
         dataContract = ImbuedData(address(proxy));
         dataContract.initialize(imbuers, imbuedDeployer);
 
-
         vm.prank(imbuedDeployer); nft.setDataContract(address(implementation));
     }
 
