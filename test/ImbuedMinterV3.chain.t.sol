@@ -50,6 +50,15 @@ contract MinterTestChain is Test {
         vm.prank(imbuedDeployer); nft.setDataContract(address(dataContract));
     }
 
+    function testMinterUpgrade(uint16 tokenId, address friend, string calldata imbuement) public {
+        bytes32 role = dataContract.IMBUER_ROLE();
+        vm.prank(imbuedDeployer); dataContract.revokeRole(role, address(minter));
+        minter = new ImbuedMintV3(0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A);
+        vm.prank(imbuedDeployer); nft.setMintContract(address(minter));
+        vm.prank(imbuedDeployer); dataContract.grantRole(role, address(minter));
+        testMiamiMint(tokenId, friend, imbuement);
+    }
+
     function testMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
         vm.assume(bytes(imbuement).length > 0);
         uint totalSupply = miami.totalSupply();
