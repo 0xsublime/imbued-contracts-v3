@@ -65,7 +65,7 @@ contract ImbuedMintV3 is Ownable {
     /// @param recipient what address should be sent the new token, must be an
     ///        EOA or contract able to receive ERC721s.
     /// @param amount the number of tokens to mint, starting with id `nextId()`.
-    function adminMintAmount(address recipient, Edition edition, uint8 amount) external payable onlyOwner() {
+    function adminMintAmount(address recipient, Edition edition, uint8 amount) external onlyOwner() {
         _mint(recipient, edition, amount);
     }
 
@@ -74,7 +74,7 @@ contract ImbuedMintV3 is Ownable {
     /// @param recipient what address should be sent the new token, must be an
     ///        EOA or contract able to receive ERC721s.
     /// @param tokenId which id to mint, may not be a previously minted one.
-    function adminMintSpecific(address recipient, uint256 tokenId) external payable onlyOwner() {
+    function adminMintSpecific(address recipient, uint256 tokenId) external onlyOwner() {
         NFT.mint(recipient, tokenId);
     }
 
