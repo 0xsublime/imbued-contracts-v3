@@ -8,7 +8,7 @@ import "openzeppelin-contracts-upgradeable/proxy/utils/Initializable.sol";
 import "./deployed/IImbuedNFT.sol";
 
 contract ImbuedData is AccessControlUpgradeable {
-    IImbuedNFT constant public NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
+    IImbuedNFT public constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
     bytes32 public constant IMBUER_ROLE = keccak256("IMBUER_ROLE");
 
     event Imbued(uint256 indexed tokenId, address indexed owner, string imbuement);
