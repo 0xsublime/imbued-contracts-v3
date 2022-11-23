@@ -10,4 +10,7 @@ runs = 1000
 polygon = "${RPC_POLYGON}"
 mainnet = "http://localhost:8545"
 
+[etherscan]
+polygon = { key = "${POLYGONSCAN_KEY}" }
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
