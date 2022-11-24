@@ -34,19 +34,6 @@ contract ImbuedData is AccessControlUpgradeable {
         }
     }
 
-    // Unnecessary! Implemented by default in AccessControl
-    /*
-    function removeImbuer(address imbuer) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not an admin");
-        revokeRole(IMBUER_ROLE, imbuer);
-    }
-
-    function addImbuer(address imbuer) external {
-        require(hasRole(DEFAULT_ADMIN_ROLE, msg.sender), "Caller is not an admin");
-        grantRole(IMBUER_ROLE, imbuer);
-    }
-    */
-
     function imbue(uint256 tokenId, bytes32 imbuement) external {
         require(NFT.ownerOf(tokenId) == msg.sender, "Caller is not owner");
         _imbue(tokenId, imbuement, msg.sender, uint96(block.timestamp));
