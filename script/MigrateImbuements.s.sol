@@ -17,6 +17,7 @@ contract MigrateImbuements is Script, Test {
     }
 
     function run() public {
+        require(false, "Don't execute this script by accident");
         vm.createSelectFork(vm.rpcUrl("polygon"));
 
         address dataContractAddress = NFT.dataContract();
