@@ -13,7 +13,7 @@ contract MinterDeploy is Script, Test {
     address constant IMBUEDDEPLOYER = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
     address constant METAVERSE_MIAMI_TICKET = 0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A;
 
-    ImbuedData constant dataContract = ImbuedData(0x0000000000000000000000000000000000000000); // TODO: fill in
+    ImbuedData constant dataContract = ImbuedData(0x069d0d1Bd05A5c6454d08d318eDF493786E57ba4);
 
     ImbuedMintV3 minter; 
 
