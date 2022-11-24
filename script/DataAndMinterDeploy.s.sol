@@ -23,6 +23,7 @@ contract DataAndMinter is Script, Test {
 
     function run() public {
         require(false, "Don't execuite this script by accident");
+        require(false, "This is deprecated, use DataDeploy.s.sol, then adapt MinterDeploy.s.sol with the data contract address");
         vm.createSelectFork(vm.rpcUrl("polygon"));
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);

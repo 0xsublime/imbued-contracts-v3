@@ -20,7 +20,7 @@ contract UpdateDataContract is Script, Test {
     }
 
     function run() public {
-
+        require(false, "Don't run by accident");
         vm.createSelectFork(vm.rpcUrl("polygon"));
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
