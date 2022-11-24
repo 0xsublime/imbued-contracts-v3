@@ -72,7 +72,7 @@ contract ImbuedData is AccessControlUpgradeable {
     function getEntropy(uint8 edition) external view returns (bytes memory) {
         require(edition < 7, "Invalid edition");
         bytes memory entropy = new bytes(0);
-        uint start = edition * 100;
+        uint start = uint(edition) * 100;
         unchecked {
             for (uint i ; i < 100; ++i) {
                 bytes2 prefix = bytes2(tokenEntropy[start + i]);

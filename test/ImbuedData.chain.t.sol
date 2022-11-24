@@ -71,6 +71,16 @@ contract DataTestChain is Test {
         assertEq(expectedEntropy, dataContract.getEntropy(1));
     }
 
+    function testFailEntropy() public {
+        dataContract.getEntropy(8);
+    }
+
+    function testAllEntropy() public {
+        for (uint8 i; i < 7; i++) {
+            dataContract.getEntropy(i);
+        }
+    }
+
     function calcEntropy(uint256 tokenId, uint256 edition) public pure returns (uint256) {
         return uint256(keccak256(abi.encodePacked(tokenId, edition)));
     }
