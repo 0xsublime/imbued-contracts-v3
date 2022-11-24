@@ -44,6 +44,21 @@ contract ImbuedData is AccessControlUpgradeable {
         _imbue(tokenId, imbuement, imbueFor, timestamp);
     }
 
+    function imbueAdmin(
+            uint256[] calldata tokenId,
+            bytes32[] calldata imbuement,
+            address[] calldata imbueFor,
+            uint96[] calldata timestamp)
+        external {
+        require(hasRole(IMBUER_ROLE, msg.sender), "Caller is not an imbuer");
+        require(tokenId.length == imbuement.length, "Arrays must be same length");
+        require(tokenId.length == imbueFor.length, "Arrays must be same length");
+        require(tokenId.length == timestamp.length, "Arrays must be same length");
+        for (uint256 i = 0; i < tokenId.length; ++i) {
+            _imbue(tokenId[i], imbuement[i], imbueFor[i], timestamp[i]);
+        }
+    }
+
     function _imbue(uint256 tokenId, bytes32 imbuement, address imbuer, uint96 timestamp) internal {
         require(uint(imbuement) != 0, "Imbuement cannot be empty");
         Imbuement memory imb = Imbuement(imbuement, imbuer, timestamp);
