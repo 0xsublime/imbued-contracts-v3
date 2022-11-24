@@ -45,16 +45,20 @@ contract GasTestChain is Test {
     }
 
     function testMint1() public {
-        vm.prank(alice); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LIFE, 1);
+        (,,,uint216 price) = minter.mintInfos(uint(ImbuedMintV3.Edition.LIFE));
+        vm.prank(alice); minter.mint{value: price}(ImbuedMintV3.Edition.LIFE, 1);
     }
 
     function testMint2() public {
-        vm.prank(alice); minter.mint{value: 0.10 ether}(ImbuedMintV3.Edition.LIFE, 2);
+        (,,,uint216 price) = minter.mintInfos(uint(ImbuedMintV3.Edition.LIFE));
+        vm.prank(alice); minter.mint{value: 2 * price}(ImbuedMintV3.Edition.LIFE, 2);
     }
 
     function testMint5() public {
-        vm.prank(alice); minter.mint{value: 0.25 ether}(ImbuedMintV3.Edition.LIFE, 5);
+        (,,,uint216 price) = minter.mintInfos(uint(ImbuedMintV3.Edition.LIFE));
+        vm.prank(alice); minter.mint{value: 5 * price}(ImbuedMintV3.Edition.LIFE, 5);
     }
+
     function testMiamiMint() public {
         vm.prank(miamiWhale); minter.mintFriendshipMiami(221, alice, "We are best buddies");
     }

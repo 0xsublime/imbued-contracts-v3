@@ -35,7 +35,7 @@ contract MinterTestChain is Test {
         vm.prank(imbuedDeployer); nft.setEditionTransferable(4);
         assertEq(address(minter.NFT()), address(nft));
         for (uint i = 0; i < users.length; i++) {
-            vm.deal(users[i], 10 ether);
+            vm.deal(users[i], 100 ether);
         }
         fixtures = [address(0), address(this), address(nft), address(minter), address(vm), 0x4e59b44847b379578588920cA78FbF26c0B4956C];
 
@@ -105,11 +105,15 @@ contract MinterTestChain is Test {
     }
 
     function testMint() public {
-        vm.prank(users[0]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LIFE, 1);
+        uint216 price;
+        (,,, price) = minter.mintInfos(uint(ImbuedMintV3.Edition.LIFE));
+        vm.prank(users[0]); minter.mint{value: price}(ImbuedMintV3.Edition.LIFE, 1);
         assertEq(nft.ownerOf(201), address(users[0]));
-        vm.prank(users[1]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.LONGING, 1);
+        (,,, price) = minter.mintInfos(uint(ImbuedMintV3.Edition.LONGING));
+        vm.prank(users[1]); minter.mint{value: price}(ImbuedMintV3.Edition.LONGING, 1);
         assertEq(nft.ownerOf(301), address(users[1]));
-        vm.prank(users[2]); minter.mint{value: 0.05 ether}(ImbuedMintV3.Edition.FRIENDSHIP, 1);
+        (,,, price) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP));
+        vm.prank(users[2]); minter.mint{value: price}(ImbuedMintV3.Edition.FRIENDSHIP, 1);
         assertEq(nft.ownerOf(461), address(users[2]));
     }
 
@@ -130,7 +134,7 @@ contract MinterTestChain is Test {
 //      console.log("mintCost", mintCost);
 //      console.log("nextId", nextId);
 
-        vm.deal(user, 10 ether); vm.prank(user); minter.mint{value: mintCost}(ImbuedMintV3.Edition(edition), amount);
+        vm.deal(user, 100 ether); vm.prank(user); minter.mint{value: mintCost}(ImbuedMintV3.Edition(edition), amount);
         for (uint i = 0; i < amount; i++) {
             assertEq(nft.ownerOf(nextId + i), user);
         }
