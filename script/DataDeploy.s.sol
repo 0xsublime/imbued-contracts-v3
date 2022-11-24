@@ -20,8 +20,7 @@ contract DataDeploy is Script, Test {
     function setUp() public {}
 
     function run() public {
-        require(false, "Don't execuite this script by accident");
-        vm.createSelectFork(vm.rpcUrl("polygon"));
+        vm.createSelectFork(vm.rpcUrl("mainnet"));
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
