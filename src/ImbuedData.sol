@@ -57,6 +57,17 @@ contract ImbuedData is AccessControlUpgradeable {
         emit Imbued(tokenId, imbuer, string(imb_bytes));
     }
 
+    // View functions.
+
+    function getNumImbuements(uint256 tokenId) external view returns (uint256) {
+        return imbuements[tokenId].length;
+    }
+
+    function getLastImbuement(uint256 tokenId) external view returns (Imbuement memory) {
+        Imbuement[] memory imb = imbuements[tokenId];
+        require(imb.length > 0, "No imbuements");
+        return imb[imb.length - 1];
+    }
 
     function getEntropy(uint8 edition) external view returns (bytes memory) {
         bytes memory entropy = new bytes(0);
