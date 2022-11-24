@@ -38,8 +38,6 @@ contract MinterDeploy is Script, Test {
 
     function checkDeployment() public {
         assertEq(NFT.owner(), IMBUEDDEPLOYER, "NFT owner is deployer");
-        assertEq(admin.owner(), IMBUEDDEPLOYER, "ProxyAdmin owner is deployer");
-        vm.prank(address(admin)); assertEq(proxy.admin(), address(admin), "Proxy admin is ProxyAdmin");
         assertEq(minter.owner(), IMBUEDDEPLOYER, "Minter owner is deployer");
         assertEq(NFT.mintContract(), address(minter), "NFT mint contract is minter");
         assertEq(NFT.dataContract(), address(dataContract), "NFT data contract is data contract");
