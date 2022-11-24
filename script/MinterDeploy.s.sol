@@ -11,7 +11,9 @@ contract MinterDeploy is Script, Test {
 
     IImbuedNFT constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
     address constant IMBUEDDEPLOYER = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
-    address constant METAVERSE_MIAMI_TICKET = 0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A;
+    address constant METAVERSE_MIAMI_TICKET_MAINNET = 0x9B6F8932A5F75cEc3f20f91EabFD1a4e6e572C0A;
+    address constant METAVERSE_MIAMI_TICKET_POLYGON = 0x000001E1b2b5f9825f4d50bD4906aff2F298af4e;
+    address METAVERSE_MIAMI_TICKET;
 
     ImbuedData constant dataContract_MAINNET = ImbuedData(0x069d0d1Bd05A5c6454d08d318eDF493786E57ba4);
     ImbuedData constant dataContract_POLYGON = ImbuedData(0xf5840D1E4f0179BF291030594ADa2aB81597eB5a);
@@ -27,8 +29,10 @@ contract MinterDeploy is Script, Test {
         string memory network = "polygon";
         if (keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("mainnet"))) {
             dataContract = dataContract_MAINNET;
+            METAVERSE_MIAMI_TICKET = METAVERSE_MIAMI_TICKET_MAINNET;
         } else if (keccak256(abi.encodePacked(network)) == keccak256(abi.encodePacked("polygon"))) {
             dataContract = dataContract_POLYGON;
+            METAVERSE_MIAMI_TICKET = METAVERSE_MIAMI_TICKET_POLYGON;
         } else {
             revert("Unknown network");
         }
