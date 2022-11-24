@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 import "forge-std/Test.sol";
 import "openzeppelin-contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import "openzeppelin-contracts/proxy/transparent/ProxyAdmin.sol";
-import "../src/ImbuedMinterV3.sol";
+import "../../src/ImbuedMinterV3.sol";
 
 contract DataAndMinter is Script, Test {
 
