@@ -17,7 +17,8 @@ contract MigrateImbuements is Script, Test {
     }
 
     function run() public {
-        vm.createSelectFork(vm.rpcUrl("polygon"));
+
+        vm.createSelectFork(vm.rpcUrl("mainnet"));
 
         address dataContractAddress = NFT.dataContract();
         TransparentUpgradeableProxy proxy = TransparentUpgradeableProxy(payable(dataContractAddress));
