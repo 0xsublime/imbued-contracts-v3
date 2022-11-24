@@ -11,15 +11,18 @@ contract MigrateImbuements is Script, Test {
     IImbuedNFT constant NFT = IImbuedNFT(0x000001E1b2b5f9825f4d50bD4906aff2F298af4e);
     address constant IMBUEDDEPLOYER = 0x34EeE73e731fB2A428444e2b2957C36A9b145017;
 
-    ProxyAdmin constant admin = ProxyAdmin(0x0985A0AE172C85Ca9Cde1f21CcFE6CCa8929734e);
-    TransparentUpgradeableProxy constant proxy = TransparentUpgradeableProxy(payable(0xf5840D1E4f0179BF291030594ADa2aB81597eB5a));
-    ImbuedData constant dataContract = ImbuedData(address(proxy));
+    ImbuedData dataContract;
 
     function setUp() public {
     }
 
     function run() public {
         vm.createSelectFork(vm.rpcUrl("polygon"));
+
+        address dataContractAddress = NFT.dataContract();
+        TransparentUpgradeableProxy proxy = TransparentUpgradeableProxy(payable(dataContractAddress));
+        dataContract = ImbuedData(address(proxy));
+
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
@@ -114,8 +117,6 @@ contract MigrateImbuements is Script, Test {
         assertEq(imb.timestamp, 12345, "Imbuement 1337 has correct timestamp");
 
         assertEq(NFT.owner(), IMBUEDDEPLOYER, "NFT owner is deployer");
-        assertEq(admin.owner(), IMBUEDDEPLOYER, "ProxyAdmin owner is deployer");
-        vm.prank(address(admin)); assertEq(proxy.admin(), address(admin), "Proxy admin is ProxyAdmin");
         assertEq(NFT.dataContract(), address(dataContract), "NFT data contract is data contract");
     }
 }
