@@ -59,6 +59,31 @@ contract MinterTestChain is Test {
         testMiamiMint(tokenId, friend, imbuement);
     }
 
+    function testMiamiMint() public {
+        uint tokenId = 100;
+        address friend = address(0xdeadbada55);
+        string memory imbuement = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+        console.log(bytes(imbuement).length);
+        address sender = miami.ownerOf(tokenId);
+        (uint nextId, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+        assertEq(nft.ownerOf(nextId), friend);
+        (uint nextIdNew, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        assertEq(nextIdNew, nextId + 1);
+    }
+
+    function testFailMiamiMint() public {
+        uint tokenId = 100;
+        address friend = address(0xdeadbada55);
+        string memory imbuement = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"; // too long
+        address sender = miami.ownerOf(tokenId);
+        (uint nextId, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        vm.prank(sender); minter.mintFriendshipMiami(tokenId, friend, imbuement);
+        assertEq(nft.ownerOf(nextId), friend);
+        (uint nextIdNew, , ,) = minter.mintInfos(uint(ImbuedMintV3.Edition.FRIENDSHIP_MIAMI));
+        assertEq(nextIdNew, nextId + 1);
+    }
+
     function testMiamiMint(uint16 tokenId, address friend, string calldata imbuement) public {
         vm.assume(bytes(imbuement).length > 0);
         uint totalSupply = miami.totalSupply();
