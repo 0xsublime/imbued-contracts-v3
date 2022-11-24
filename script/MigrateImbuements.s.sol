@@ -111,10 +111,10 @@ contract MigrateImbuements is Script, Test {
         assertEq(loveEntropy, loveExpectedEntropy, "Love entropy should match");
         assertEq(aweEntropy, aweExpectedEntropy, "Awe entropy should match");
         dataContract.getNumImbuements(101);
-        ImbuedData.Imbuement memory imb = dataContract.getLastImbuement(9876);
-        assertEq(imb.imbuement, "\"this token does not exist\"", "Imbuement 1337 has correct imbuement");
-        assertEq(imb.imbuer, 0xdEad000000000000000000000000000000000000, "Imbuement 1337 has correct address");
-        assertEq(imb.timestamp, 12345, "Imbuement 1337 has correct timestamp");
+        ImbuedData.Imbuement memory imb = dataContract.getLastImbuement(100);
+        assertEq(imb.imbuement, "to live this is in my own flesh", "Token 100 has correct imbuement");
+        assertEq(imb.imbuer, 0x11a3E98d538376108302bE6B38Ad9F183791767d, "Token 100 has correct address");
+        assertEq(imb.timestamp, 1656455278, "Token 100 has correct timestamp");
 
         assertEq(NFT.owner(), IMBUEDDEPLOYER, "NFT owner is deployer");
         assertEq(NFT.dataContract(), address(dataContract), "NFT data contract is data contract");
