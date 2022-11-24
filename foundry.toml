@@ -8,9 +8,10 @@ runs = 1000
 
 [rpc_endpoints]
 polygon = "${RPC_POLYGON}"
-mainnet = "http://localhost:8545"
+mainnet = "${RPC_MAINNET}"
 
 [etherscan]
 polygon = { key = "${POLYGONSCAN_KEY}" }
+mainnet = { key = "${ETHERSCAN_API_KEY}" }
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
