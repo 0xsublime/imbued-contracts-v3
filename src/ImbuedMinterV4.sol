@@ -15,42 +15,50 @@ contract ImbuedMintV4 is Ownable {
         uint16 nextId;
         uint16 maxId;
         bool openMint;
-        bool payForward;
+        bool canSelfMint;
         uint208 price;
     }
 
+    enum Edition { LOVE, AWE, LIFE, LONGING, FRIENDSHIP, GRIEF, APPRECIATION}
     MintInfo[7] public mintInfos;
 
     constructor() {
         // Love is empty/closed for mint
         // Awe is empty/closed for mint
-        mintInfos[2] = MintInfo(231, 299, true,  false, 0 ether); // Life
-        mintInfos[3] = MintInfo(334, 399, true,  false, 0 ether); // Longing
-        mintInfos[4] = MintInfo(407, 460, true,  true,  0 ether); // Friendship
-        mintInfos[5] = MintInfo(501, 599, false, false, 0 ether); // Grief
-        mintInfos[6] = MintInfo(601, 699, false, true,  0 ether); // Appreciation
+        mintInfos[2] = MintInfo(231, 299, true,  true,  0 ether); // Life
+        mintInfos[3] = MintInfo(334, 399, true,  true,  0 ether); // Longing
+        mintInfos[4] = MintInfo(407, 499, true,  false, 0 ether); // Friendship
+        mintInfos[5] = MintInfo(501, 599, false, true,  0 ether); // Grief
+        mintInfos[6] = MintInfo(601, 699, false, false, 0 ether); // Appreciation
     }
 
     // Mint tokens of a specific edition.
-    function mint(uint edition, uint8 amount) external payable {
-        mint(edition, amount, msg.sender, "");
-    }
+    function mint(Edition edition, uint8 amount) external payable {
+        mint(uint(edition), amount, msg.sender, "");
+  }
 
     error IncorrectPaymentAmount();
+    error NotOpenForMint();
+    error CannotPayForwardToSelf();
+    error ImbuementTooLong();
+    error NullImbuement();
+    error EditionMintedOut();
+
     function mint(uint edition, uint8 amount, address receiver, string memory imbuement) public payable {
         // Check payment.
         MintInfo memory info = mintInfos[edition];
-        require(info.price * amount == msg.value, "Incorrect payment amount");
-        require(info.openMint, "This edition is not open for minting");
-        if (info.payForward) {
-            require(receiver != msg.sender, "Cannot pay forward to self");
+        if (info.price * amount != msg.value) revert IncorrectPaymentAmount();
+        if (!info.openMint) revert NotOpenForMint();
+        if (!info.canSelfMint) {
+            if (receiver == msg.sender) revert CannotPayForwardToSelf();
         }
         _mint(receiver, edition, amount);
         if (bytes(imbuement).length > 0) {
-            require(bytes(imbuement).length <= 32, "Imbuement too long");
+            if (bytes(imbuement).length > 32) revert ImbuementTooLong();
             uint256 nextId = info.nextId;
             ImbuedData data = ImbuedData(NFT.dataContract());
             bytes32 imb = bytes32(bytes(imbuement));
+            if (uint(imb) == 0) revert NullImbuement();
             data.imbueAdmin(nextId, imb, msg.sender, uint96(block.timestamp));
         }
     }
@@ -86,11 +94,11 @@ contract ImbuedMintV4 is Ownable {
     /// @param maxId the maximum id to mint.
     /// @param price the price to mint one token.
     /// @dev nextId must be <= maxId.
-    function setEdition(uint edition, uint16 nextId, uint16 maxId, bool openMint, bool payForward, uint208 price) external onlyOwner() {
+    function setEdition(uint edition, uint16 nextId, uint16 maxId, bool openMint, bool canSelfMint, uint208 price) external onlyOwner() {
         require(nextId % 100 <= maxId % 100, "nextId must be <= maxId");
         require(nextId / 100 == maxId / 100, "nextId and maxId must be in the same batch");
         require(NFT.provenance(nextId, 0, 0).length == 0, "nextId must not be minted yet");
-        mintInfos[edition] = MintInfo(nextId, maxId, openMint, payForward, price);
+        mintInfos[edition] = MintInfo(nextId, maxId, openMint, canSelfMint, price);
     }
 
     // internal
@@ -100,7 +108,7 @@ contract ImbuedMintV4 is Ownable {
         MintInfo memory infoCache = mintInfos[edition];
         unchecked {
             uint256 newNext = infoCache.nextId + amount;
-            require(newNext - 1 <= infoCache.maxId, "Minting would exceed maxId");
+            if (newNext - 1 > infoCache.maxId) revert EditionMintedOut();
             for (uint256 i = 0; i < amount; i++) {
                 NFT.mint(recipient, infoCache.nextId + i); // reentrancy danger. Handled by fact that same ID can't be minted twice.
             }
