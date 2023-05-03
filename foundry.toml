@@ -3,6 +3,9 @@ src = 'src'
 out = 'out'
 libs = ['lib']
 
+via_ir = true
+optimizer_runs = 2000
+
 [profile.default.fuzz]
 runs = 1000
 
