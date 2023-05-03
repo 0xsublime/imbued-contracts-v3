@@ -9,6 +9,12 @@ contract Quick is Test {
     function setUp() public {
     }
 
+    function testStr() public {
+        bytes32 bs = bytes32(0);
+        console.log(bytes(string(abi.encodePacked(bs))).length);
+        console.log(string(abi.encodePacked(bs)));
+    }
+
     function testQuick() public {
         string memory foo = "foo bar";
         console.logBytes32(keccak256(abi.encodePacked(foo)));
